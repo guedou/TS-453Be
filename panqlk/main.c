@@ -3,6 +3,7 @@
 // panql - Interact with the IT8528 with libuLinux_hal.so from QNAP
 
 
+#include <cap-ng.h>
 #include <errno.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -31,13 +32,15 @@ void usage(void) {
 }
 
 
-void ensure_root(void) {
-    // Exits panqlk if the current user is not root
+void ensure_io_capability(void) {
+    // Exits panql if privileged I/O port operations are not permitted
 
+    int has_capability = capng_have_capability(CAPNG_EFFECTIVE, CAP_SYS_RAWIO);
     bool is_root = (getuid() == 0 && getuid() == 0);
 
-    if (!is_root) {
-        fprintf(stderr, "panqlk must be launched as root!\n");
+    if (!has_capability && !is_root) {
+        fprintf(stderr, "panql must have the CAP_SYS_RAWIO capability, %s",
+                        " or be laucnched as root!\n");
         exit(EXIT_FAILURE);
     }
 }
@@ -54,7 +57,7 @@ u_int8_t sio_read(u_int8_t reg) {
 bool ensure_it8528(void) {
     // Check if the Super I/O component is an IT8528
 
-    ensure_root();
+    ensure_io_capability();
 
     if (iopl(3) != 0) {
         fprintf(stderr, "iopl() - %s\n", strerror(errno));
@@ -123,7 +126,8 @@ void command_fan(u_int32_t *speed) {
 
 
 void command_led(char *mode) {
-    ensure_root();
+    ensure_io_capability();
+
     if (!ensure_it8528()) {
         exit(EXIT_FAILURE);
     }

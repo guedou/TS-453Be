@@ -10,7 +10,7 @@ F_TS-X53B_20161212-1.3.0_EFI.img:
 
 all: panqlk
 
-LD_FLAGS=-L./ -luLinux_hal -Wl,-rpath,./
+LD_FLAGS=-L./ -luLinux_hal -Wl,-rpath,./ -lcap-ng
 
 panqlk: main.c
 	$(CC) -o $@ $^ $(LD_FLAGS)
