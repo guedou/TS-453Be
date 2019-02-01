@@ -11,6 +11,7 @@
 #include <string.h>
 #include <sys/io.h>
 #include <unistd.h>
+#include <time.h>
 
 #include "uLinux_hal.h"
 
@@ -25,6 +26,7 @@ void usage(void) {
     printf("  fan [ SPEED ]            - get or set the fan speed\n");
     printf("  help                     - this help message\n");
     printf("  led { on | off | blink } - configure the front USB LED\n");
+    printf("  log                      - display fan speed & temperature\n");
     printf("  temperature              - retrieve the temperature\n");
     printf("\n");
 
@@ -125,6 +127,35 @@ void command_fan(u_int32_t *speed) {
 }
 
 
+void command_log(void) {
+    // Print the fan speed and the temperature for logging
+
+    if (!ensure_it8528()) {
+        exit(EXIT_FAILURE);
+    }
+
+    int status_value = 0xFF;
+    int status_ret = ec_sys_get_fan_status(0, &status_value);
+    if (status_ret != 0 && status_value != 0) {
+        fprintf(stderr, "Incorrect fan status!\n");
+        exit(EXIT_FAILURE);
+    }
+
+    int speed_value;
+    if(ec_sys_get_fan_speed(0, &speed_value) != 0) {
+        fprintf(stderr, "Can't get fan speed!\n");
+        exit(EXIT_FAILURE);
+    }
+
+    double temperature_value = 0;
+    if (ec_sys_get_temperature(0, &temperature_value) != 0) {
+        fprintf(stderr, "Can't get the temperature!\n");
+        exit(EXIT_FAILURE);
+    }
+    printf("%ld,%d,%.2f\n", time(NULL), speed_value, temperature_value);
+}
+
+
 void command_led(char *mode) {
     ensure_io_capability();
 
@@ -199,6 +230,9 @@ int main(int argc, char **argv) {
             fprintf(stderr, "a LED mode is needed!\n");
             exit(EXIT_FAILURE);
         }
+    }
+    else if (strcmp("log", command) == 0) {
+        command_log();
     }
     else if (strcmp("temperature", command) == 0) {
         command_temperature();
