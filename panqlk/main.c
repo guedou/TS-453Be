@@ -1,6 +1,6 @@
 // Copyright (C) 2019 Guillaume Valadon <guillaume@valadon.net>
 
-// panqlk - Interact with the IT8528 with libuLinux_hal.so from QNAP
+// panql - Interact with the IT8528 with libuLinux_hal.so from QNAP
 
 
 #include <errno.h>
@@ -17,9 +17,10 @@
 void usage(void) {
     // Print usage
 
-    printf("Usage: panqlk { COMMAND | help }\n\n");
+    printf("Usage: panql { COMMAND | help }\n\n");
+    printf("    Control the I8528 Super I/O controller on QNAP TS-453Be\n\n");
     printf("Available commands:\n");
-    printf("  check                    - detect the IT8528 Super I/O controller\n");
+    printf("  check                    - detect the Super I/O controller\n");
     printf("  fan [ SPEED ]            - get or set the fan speed\n");
     printf("  help                     - this help message\n");
     printf("  led { on | off | blink } - configure the front USB LED\n");
@@ -64,11 +65,11 @@ bool ensure_it8528(void) {
     u_int8_t chipid1 = sio_read(0x20);
     u_int8_t chipid2 = sio_read(0x21);
     if (chipid1 == 0x85 && chipid2 == 0x28) {
-	return true;
+        return true;
     }
     else {
-	fprintf(stderr, "IT8528 not found!\n");
-	return false;
+        fprintf(stderr, "IT8528 not found!\n");
+        return false;
     }
 }
 
@@ -77,7 +78,7 @@ void command_check(void) {
     // Implements the check command
 
     if (ensure_it8528()) {
-	printf("IT8528 detected.\n");
+        printf("IT8528 detected.\n");
         exit(EXIT_SUCCESS);
     }
     else {
@@ -101,21 +102,21 @@ void command_fan(u_int32_t *speed) {
     }
 
     if (speed == NULL) {
-	int speed_value;
-	if(ec_sys_get_fan_speed(0, &speed_value) != 0) {
-	    fprintf(stderr, "Can't get fan speed!\n");
-	    exit(EXIT_FAILURE);
-	}
-	// TODO: 5% per 5% up to 0 and 100 ?
-	printf("%d RPM (~%.2f%%)\n", speed_value, speed_value / (float)1700 * 100);
+        int speed_value;
+        if(ec_sys_get_fan_speed(0, &speed_value) != 0) {
+            fprintf(stderr, "Can't get fan speed!\n");
+            exit(EXIT_FAILURE);
+        }
+        // TODO: 5% per 5% up to 0 and 100 ?
+        printf("%d RPM (~%.2f%%)\n", speed_value, speed_value / (float)1700 * 100);
     }
     else {
-	// TODO: y = 7*x - 17
-	//       110 is a light sound
-	if(ec_sys_set_fan_speed(0, *speed) != 0) {
-	    fprintf(stderr, "Can't set fan speed!\n");
-	    exit(EXIT_FAILURE);
-	}
+        // TODO: y = 7*x - 17
+        //       110 is a light sound
+        if(ec_sys_set_fan_speed(0, *speed) != 0) {
+            fprintf(stderr, "Can't set fan speed!\n");
+            exit(EXIT_FAILURE);
+        }
     }
 
 }
@@ -129,22 +130,22 @@ void command_led(char *mode) {
 
     int led_mode = 0;
     if (strcmp("off", mode) == 0) {
-	led_mode = 0;
+        led_mode = 0;
     }
     else if (strcmp("blink", mode) == 0) {
-	led_mode = 1;
+        led_mode = 1;
     }
     else if (strcmp("on", mode) == 0) {
-	led_mode = 2;
+        led_mode = 2;
     }
     else {
-	fprintf(stderr, "Invalide LED mode!\n");
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "Invalide LED mode!\n");
+        exit(EXIT_FAILURE);
     }
 
     if(ec_sys_set_front_usb_led(led_mode) != 0) {
-	fprintf(stderr, "Can't set the USB LED!\n");
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "Can't set the USB LED!\n");
+        exit(EXIT_FAILURE);
     }
 }
 
@@ -158,8 +159,8 @@ void command_temperature(void) {
 
     double temperature_value = 0;
     if (ec_sys_get_temperature(0, &temperature_value) != 0) {
-	fprintf(stderr, "Can't get the temperature!\n");
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "Can't get the temperature!\n");
+        exit(EXIT_FAILURE);
     }
     printf("%.2f °C\n", temperature_value); // TODO: there is a 2 degrees difference with this value (see ADJUST_SYS_TEMP=-2 in /etc/hal_util.conf)
 }
@@ -188,12 +189,12 @@ int main(int argc, char **argv) {
     }
     else if (strcmp("led", command) == 0) {
         if (argv[2]) {
-	    command_led(argv[2]);
-	}
-	else {
-	    fprintf(stderr, "a LED mode is needed!\n");
-	    exit(EXIT_FAILURE);
-	}
+            command_led(argv[2]);
+        }
+        else {
+            fprintf(stderr, "a LED mode is needed!\n");
+            exit(EXIT_FAILURE);
+        }
     }
     else if (strcmp("temperature", command) == 0) {
         command_temperature();
