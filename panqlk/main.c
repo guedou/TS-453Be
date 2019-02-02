@@ -197,7 +197,11 @@ void command_temperature(void) {
         fprintf(stderr, "Can't get the temperature!\n");
         exit(EXIT_FAILURE);
     }
-    printf("%.2f °C\n", temperature_value); // TODO: there is a 2 degrees difference with this value (see ADJUST_SYS_TEMP=-2 in /etc/hal_util.conf)
+
+
+    // Note: the file /etc/hal_util.conf containes the value ADJUST_SYS_TEMP=-2
+    //       that could mean that this reading needs to be corrected.
+    printf("%.2f °C\n", temperature_value);
 }
 
 
