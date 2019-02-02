@@ -4,7 +4,7 @@
 
 
 int ec_sys_get_fan_speed(int, int*);
-int ec_sys_set_fan_speed(int, int);
+int ec_sys_set_fan_speed(int, u_int8_t);
 int ec_sys_get_fan_status(int, int*);
 
 int ec_sys_set_front_usb_led(int);

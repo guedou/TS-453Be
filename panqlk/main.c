@@ -22,12 +22,12 @@ void usage(void) {
     printf("Usage: panql { COMMAND | help }\n\n");
     printf("    Control the I8528 Super I/O controller on QNAP TS-453Be\n\n");
     printf("Available commands:\n");
-    printf("  check                    - detect the Super I/O controller\n");
-    printf("  fan [ SPEED ]            - get or set the fan speed\n");
-    printf("  help                     - this help message\n");
-    printf("  led { on | off | blink } - configure the front USB LED\n");
-    printf("  log                      - display fan speed & temperature\n");
-    printf("  temperature              - retrieve the temperature\n");
+    printf("  check                      - detect the Super I/O controller\n");
+    printf("  fan [ SPEED_PERCENTAGE ]   - get or set the fan speed\n");
+    printf("  help                       - this help message\n");
+    printf("  led { on | off | blink }   - configure the front USB LED\n");
+    printf("  log                        - display fan speed & temperature\n");
+    printf("  temperature                - retrieve the temperature\n");
     printf("\n");
 
     exit(EXIT_FAILURE);
@@ -99,6 +99,8 @@ void command_fan(u_int32_t *speed) {
         exit(EXIT_FAILURE);
     }
 
+    u_int16_t max_fan_speed = 1720;
+
     int status_value = 0xFF;
     int status_ret = ec_sys_get_fan_status(0, &status_value);
     if (status_ret != 0 && status_value != 0) {
@@ -112,18 +114,33 @@ void command_fan(u_int32_t *speed) {
             fprintf(stderr, "Can't get fan speed!\n");
             exit(EXIT_FAILURE);
         }
-        // TODO: 5% per 5% up to 0 and 100 ?
-        printf("%d RPM (~%.2f%%)\n", speed_value, speed_value / (float)1700 * 100);
+
+	float percent = (float) speed_value / (max_fan_speed-15) * 100;
+	if (percent > 100.0) {
+	   percent = 100;
+	}
+        printf("%d RPM (~%.2f%%)\n", speed_value, percent);
     }
     else {
-        // TODO: y = 7*x - 17
-        //       110 is a light sound
-        if(ec_sys_set_fan_speed(0, *speed) != 0) {
+
+	if (*speed < 0 || *speed > 100) {
+            fprintf(stderr, "Invalid percent!\n");
+            exit(EXIT_FAILURE);
+	}
+
+	// Note: the formula to convert from fan speed to RPM is approximately:
+	//       rpm = 7 * fan_speed - 17
+
+	// Convert from fan speed percentage to fan speed
+	float fan_speed = (max_fan_speed * *speed / 100);
+	fan_speed += 17;
+	fan_speed /= 7;
+
+        if(ec_sys_set_fan_speed(0, (u_int8_t) fan_speed) != 0) {
             fprintf(stderr, "Can't set fan speed!\n");
             exit(EXIT_FAILURE);
         }
     }
-
 }
 
 
