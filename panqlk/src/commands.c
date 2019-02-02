@@ -1,82 +1,15 @@
 // Copyright (C) 2019 Guillaume Valadon <guillaume@valadon.net>
 
-// panql - Interact with the IT8528 with libuLinux_hal.so from QNAP
+// panql - commands implementations
 
 
-#include <cap-ng.h>
-#include <errno.h>
-#include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys/io.h>
-#include <unistd.h>
 #include <time.h>
 
+#include "utils.h"
 #include "uLinux_hal.h"
-
-
-void usage(void) {
-    // Print usage
-
-    printf("Usage: panql { COMMAND | help }\n\n");
-    printf("    Control the I8528 Super I/O controller on QNAP TS-453Be\n\n");
-    printf("Available commands:\n");
-    printf("  check                      - detect the Super I/O controller\n");
-    printf("  fan [ SPEED_PERCENTAGE ]   - get or set the fan speed\n");
-    printf("  help                       - this help message\n");
-    printf("  led { on | off | blink }   - configure the front USB LED\n");
-    printf("  log                        - display fan speed & temperature\n");
-    printf("  temperature                - retrieve the temperature\n");
-    printf("\n");
-
-    exit(EXIT_FAILURE);
-}
-
-
-void ensure_io_capability(void) {
-    // Exits panql if privileged I/O port operations are not permitted
-
-    int has_capability = capng_have_capability(CAPNG_EFFECTIVE, CAP_SYS_RAWIO);
-    bool is_root = (getuid() == 0 && getuid() == 0);
-
-    if (!has_capability && !is_root) {
-        fprintf(stderr, "panql must have the CAP_SYS_RAWIO capability, %s",
-                        " or be laucnched as root!\n");
-        exit(EXIT_FAILURE);
-    }
-}
-
-
-u_int8_t sio_read(u_int8_t reg) {
-    // Read a value from a IT8528 register
-
-    outb(reg, 0x2E);
-    return inb(0x2F);
-}
-
-
-bool ensure_it8528(void) {
-    // Check if the Super I/O component is an IT8528
-
-    ensure_io_capability();
-
-    if (iopl(3) != 0) {
-        fprintf(stderr, "iopl() - %s\n", strerror(errno));
-        exit(EXIT_FAILURE);
-    }
-
-    // Access Super I/O configuration registers
-    u_int8_t chipid1 = sio_read(0x20);
-    u_int8_t chipid2 = sio_read(0x21);
-    if (chipid1 == 0x85 && chipid2 == 0x28) {
-        return true;
-    }
-    else {
-        fprintf(stderr, "IT8528 not found!\n");
-        return false;
-    }
-}
 
 
 void command_check(void) {
@@ -219,48 +152,4 @@ void command_temperature(void) {
     // Note: the file /etc/hal_util.conf containes the value ADJUST_SYS_TEMP=-2
     //       that could mean that this reading needs to be corrected.
     printf("%.2f °C\n", temperature_value);
-}
-
-
-int main(int argc, char **argv) {
-
-    if (argc < 2) {
-        usage();
-    }
-
-    char *command = argv[1];
-    if (strcmp("help", command) == 0) {
-        usage();
-    }
-    else if (strcmp("check", command) == 0) {
-        command_check();
-    }
-    else if (strcmp("fan", command) == 0) {
-        u_int32_t *speed = NULL;
-        if (argv[2]) {
-            speed = (u_int32_t*) malloc(sizeof(u_int32_t));
-            *speed = atoi(argv[2]);
-        }
-        command_fan(speed);
-    }
-    else if (strcmp("led", command) == 0) {
-        if (argv[2]) {
-            command_led(argv[2]);
-        }
-        else {
-            fprintf(stderr, "a LED mode is needed!\n");
-            exit(EXIT_FAILURE);
-        }
-    }
-    else if (strcmp("log", command) == 0) {
-        command_log();
-    }
-    else if (strcmp("temperature", command) == 0) {
-        command_temperature();
-    }
-    else {
-        usage();
-    }
-   
-    exit(EXIT_SUCCESS);
 }
