@@ -1,16 +1,9 @@
 # Copyright (C) 2019 Guillaume Valadon <guillaume@valadon.net>
 
-FW_URL=http://eu1.qnap.com/Storage/tsd/fullimage/F_TS-X53B_20161212-1.3.0_EFI.img
-
-F_TS-X53B_20161212-1.3.0_EFI.img:
-	curl -O $(FW_URL)
-
-#all: F_TS-X53B_20161212-1.3.0_EFI.img
-#	echo $(FW_URL)
-
 all: panqlk
 
-LD_FLAGS=-L./ -Iinclude/ -luLinux_hal -Wl,-rpath,./ -lcap-ng
+CFLAGS=-Iinclude/
+LD_FLAGS=-Llib/ -luLinux_hal -lcap-ng -Wl,-rpath,lib/
 
 panqlk: src/main.c src/commands.c src/utils.c
-	$(CC) -o $@ $^ $(LD_FLAGS)
+	$(CC) -o $@ $^ $(LD_FLAGS) $(CFLAGS)
