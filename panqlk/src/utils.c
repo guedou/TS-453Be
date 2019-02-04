@@ -21,7 +21,7 @@ void ensure_io_capability(void) {
 
     if (!has_capability && !is_root) {
         fprintf(stderr, "panql must have the CAP_SYS_RAWIO capability, %s",
-                        " or be laucnched as root!\n");
+                        "or be launched as root!\n");
         exit(EXIT_FAILURE);
     }
 }
