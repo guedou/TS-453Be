@@ -5,5 +5,5 @@ all: panqlk
 CFLAGS=-Iinclude/
 LD_FLAGS=-Llib/ -luLinux_hal -lcap-ng -Wl,-rpath,lib/
 
-panqlk: src/main.c src/commands.c src/utils.c
+panqlk: src/main.c src/commands.c src/utils.c src/it8528_commands.c
 	$(CC) -o $@ $^ $(LD_FLAGS) $(CFLAGS)

@@ -26,7 +26,7 @@ void command_check(void) {
 
 
 void command_fan(u_int32_t *speed) {
-    // Implements the fan command using functions from QNAP
+    // Implements the fan command
 
     if (!ensure_it8528()) {
         exit(EXIT_FAILURE);
@@ -40,6 +40,8 @@ void command_fan(u_int32_t *speed) {
         fprintf(stderr, "Incorrect fan status!\n");
         exit(EXIT_FAILURE);
     }
+
+    verify_get_fan_pwm();
 
     if (speed == NULL) {
         int speed_value;
