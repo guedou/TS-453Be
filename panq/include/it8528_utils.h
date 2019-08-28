@@ -1,6 +1,6 @@
 // Copyright (C) 2019 Guillaume Valadon <guillaume@valadon.net>
 
-// panql - IT8528 utils prototypes
+// panq - IT8528 utils prototypes
 
 
 u_int8_t it8528_check_ready(u_int8_t, u_int8_t);

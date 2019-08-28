@@ -1,6 +1,6 @@
 // Copyright (C) 2019 Guillaume Valadon <guillaume@valadon.net>
 
-// panql - commands prototypes
+// panq - commands prototypes
 
 
 void command_check(void);

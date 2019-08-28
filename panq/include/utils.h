@@ -1,6 +1,6 @@
 // Copyright (C) 2019 Guillaume Valadon <guillaume@valadon.net>
 
-// panql - utils prototypes
+// panq - utils prototypes
 
 
 #include <stdbool.h>

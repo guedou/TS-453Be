@@ -1,6 +1,6 @@
 // Copyright (C) 2019 Guillaume Valadon <guillaume@valadon.net>
 
-// panql - Interact with the IT8528 with libuLinux_hal.so from QNAP
+// panq - Interact with the IT8528 Embedded Controler
 
 
 #include <stdlib.h>
@@ -13,7 +13,7 @@
 void usage(void) {
     // Print usage
 
-    printf("Usage: panql { COMMAND | help }\n\n");
+    printf("Usage: panq { COMMAND | help }\n\n");
     printf("    Control the I8528 Super I/O controller on QNAP TS-453Be\n\n");
     printf("Available commands:\n");
     printf("  check                      - detect the Super I/O controller\n");

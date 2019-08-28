@@ -1,6 +1,6 @@
 // Copyright (C) 2019 Guillaume Valadon <guillaume@valadon.net>
 
-// panql - utils
+// panq - utils
 
 
 #include <errno.h>
@@ -12,17 +12,15 @@
 
 #include <cap-ng.h>
 
-#include "it8528_commands.h"
-
 
 void ensure_io_capability(void) {
-    // Exits panql if privileged I/O port operations are not permitted
+    // Exits panq if privileged I/O port operations are not permitted
 
     int has_capability = capng_have_capability(CAPNG_EFFECTIVE, CAP_SYS_RAWIO);
     bool is_root = (getuid() == 0 && getuid() == 0);
 
     if (!has_capability && !is_root) {
-        fprintf(stderr, "panql must have the CAP_SYS_RAWIO capability, %s",
+        fprintf(stderr, "panq must have the CAP_SYS_RAWIO capability, %s",
                         "or be launched as root!\n");
         exit(EXIT_FAILURE);
     }

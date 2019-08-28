@@ -1,6 +1,6 @@
 // Copyright (C) 2019 Guillaume Valadon <guillaume@valadon.net>
 
-// panql - commands implementations
+// panq - commands implementations
 
 
 #include <stdlib.h>
@@ -8,9 +8,8 @@
 #include <string.h>
 #include <time.h>
 
-#include "it8528_commands.h"
+#include "it8528.h"
 #include "utils.h"
-#include "uLinux_hal.h"
 
 #include <sys/io.h>
 

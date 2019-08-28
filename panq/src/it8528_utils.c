@@ -1,6 +1,6 @@
 // Copyright (C) 2019 Guillaume Valadon <guillaume@valadon.net>
 
-// panql - IT8528 utils
+// panq - IT8528 utils
 
 
 
