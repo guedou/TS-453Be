@@ -8,9 +8,11 @@
 #include <string.h>
 #include <time.h>
 
+#include "it8528_commands.h"
 #include "utils.h"
 #include "uLinux_hal.h"
 
+#include <sys/io.h>
 
 void command_check(void) {
     // Implements the check command
@@ -34,18 +36,16 @@ void command_fan(u_int32_t *speed) {
 
     u_int16_t max_fan_speed = 1720;
 
-    int status_value = 0xFF;
-    int status_ret = ec_sys_get_fan_status(0, &status_value);
+    u_int8_t status_value = 0xFF;
+    u_int8_t status_ret = it8528_get_fan_status(0, &status_value);
     if (status_ret != 0 && status_value != 0) {
         fprintf(stderr, "Incorrect fan status!\n");
         exit(EXIT_FAILURE);
     }
 
-    verify_get_fan_pwm();
-
     if (speed == NULL) {
-        int speed_value;
-        if(ec_sys_get_fan_speed(0, &speed_value) != 0) {
+        u_int32_t speed_value;
+        if(it8528_get_fan_speed(0, &speed_value) != 0) {
             fprintf(stderr, "Can't get fan speed!\n");
             exit(EXIT_FAILURE);
         }
@@ -71,7 +71,7 @@ void command_fan(u_int32_t *speed) {
 	fan_speed += 17;
 	fan_speed /= 7;
 
-        if(ec_sys_set_fan_speed(0, (u_int8_t) fan_speed) != 0) {
+        if(it8528_set_fan_speed(0, (u_int8_t) fan_speed) != 0) {
             fprintf(stderr, "Can't set fan speed!\n");
             exit(EXIT_FAILURE);
         }
@@ -86,21 +86,21 @@ void command_log(void) {
         exit(EXIT_FAILURE);
     }
 
-    int status_value = 0xFF;
-    int status_ret = ec_sys_get_fan_status(0, &status_value);
+    u_int8_t status_value = 0xFF;
+    u_int8_t status_ret = it8528_get_fan_status(0, &status_value);
     if (status_ret != 0 && status_value != 0) {
         fprintf(stderr, "Incorrect fan status!\n");
         exit(EXIT_FAILURE);
     }
 
-    int speed_value;
-    if(ec_sys_get_fan_speed(0, &speed_value) != 0) {
+    u_int32_t speed_value;
+    if(it8528_get_fan_speed(0, &speed_value) != 0) {
         fprintf(stderr, "Can't get fan speed!\n");
         exit(EXIT_FAILURE);
     }
 
     double temperature_value = 0;
-    if (ec_sys_get_temperature(0, &temperature_value) != 0) {
+    if (it8528_get_temperature(0, &temperature_value) != 0) {
         fprintf(stderr, "Can't get the temperature!\n");
         exit(EXIT_FAILURE);
     }
@@ -126,13 +126,22 @@ void command_led(char *mode) {
         led_mode = 2;
     }
     else {
-        fprintf(stderr, "Invalide LED mode!\n");
+        fprintf(stderr, "Invalid LED mode!\n");
         exit(EXIT_FAILURE);
     }
 
-    if(ec_sys_set_front_usb_led(led_mode) != 0) {
+    if(it8528_set_front_usb_led(led_mode) != 0) {
         fprintf(stderr, "Can't set the USB LED!\n");
         exit(EXIT_FAILURE);
+    }
+
+    for(int fan_id=0; fan_id < 5; fan_id++) {
+	u_int8_t ret_value, fan_status = 0;
+       	u_int32_t fan_speed = 0;
+	ret_value = it8528_get_fan_status(fan_id, &fan_status);
+	ret_value = it8528_get_fan_speed(fan_id, &fan_speed);
+	printf("fan_id=%d ret_value=%d fan_status=%d fan_speed=%d\n", fan_id, ret_value, fan_status, fan_speed);
+
     }
 }
 
@@ -145,13 +154,13 @@ void command_temperature(void) {
     }
 
     double temperature_value = 0;
-    if (ec_sys_get_temperature(0, &temperature_value) != 0) {
+    if (it8528_get_temperature(0, &temperature_value) != 0) {
         fprintf(stderr, "Can't get the temperature!\n");
         exit(EXIT_FAILURE);
     }
 
 
-    // Note: the file /etc/hal_util.conf containes the value ADJUST_SYS_TEMP=-2
+    // Note: the file /etc/hal_util.conf contains the value ADJUST_SYS_TEMP=-2
     //       that could mean that this reading needs to be corrected.
     printf("%.2f °C\n", temperature_value);
 }

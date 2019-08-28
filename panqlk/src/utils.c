@@ -32,8 +32,8 @@ void ensure_io_capability(void) {
 u_int8_t sio_read(u_int8_t reg) {
     // Read a value from a IT8528 register
 
-    outb(reg, 0x2E);
-    return inb(0x2F);
+    outb(reg, 0x2E);  // address port
+    return inb(0x2F); // data port
 }
 
 
@@ -57,29 +57,4 @@ bool ensure_it8528(void) {
         fprintf(stderr, "IT8528 not found!\n");
         return false;
     }
-}
-
-
-void verify_get_fan_pwm() {
-    // Verify the behavior of the reimplemented function
-
-    int pwm_value_lk = 0xFF;
-    int pwm_ret = ec_sys_get_fan_pwm(0, &pwm_value_lk);
-    if (pwm_ret != 0) {
-        fprintf(stderr, "ec_sys_get_fan_pwm: Incorrect pwm value!\n");
-    }
-
-    int pwm_value_re = 0xFF;
-    pwm_ret = it8528_get_fan_pwm(0, &pwm_value_re);
-    if (pwm_ret != 0) {
-        fprintf(stderr, "it8528_get_fan_pwm: Incorrect pwm value!\n");
-    }
-
-    if (pwm_value_lk != pwm_value_re) {
-        fprintf(stderr,
-	        "verify_pwm_value: Incorrect values (%d != %d)!\n",
-		pwm_value_lk, pwm_value_re
-	       );
-    }
-
 }
