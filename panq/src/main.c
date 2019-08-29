@@ -21,6 +21,7 @@ void usage(void) {
     printf("  help                       - this help message\n");
     printf("  led { on | off | blink }   - configure the front USB LED\n");
     printf("  log                        - display fan speed & temperature\n");
+    printf("  test [libuLinux_hal.so]    - test functions against libuLinux_hal.so\n");
     printf("  temperature                - retrieve the temperature\n");
     printf("\n");
 
@@ -60,6 +61,14 @@ int main(int argc, char **argv) {
     }
     else if (strcmp("log", command) == 0) {
         command_log();
+    }
+    else if (strcmp("test", command) == 0) {
+        if (argv[2]) {
+            command_test(argv[2]);
+        }
+	else {
+            command_test("libuLinux_hal.so");
+	}
     }
     else if (strcmp("temperature", command) == 0) {
         command_temperature();

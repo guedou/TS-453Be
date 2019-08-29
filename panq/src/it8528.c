@@ -12,6 +12,12 @@
 
 
 u_int8_t it8528_get_fan_status(u_int8_t fan_id, u_int8_t* status_value) {
+
+    if (fan_id > 5) {
+        fprintf(stderr, "it8528_get_fan_status: fan ID too big!\n");
+        return -1;
+    }
+
     ioperm(0x6c, 1, 1);
     ioperm(0x68, 1, 1);
 
@@ -20,6 +26,8 @@ u_int8_t it8528_get_fan_status(u_int8_t fan_id, u_int8_t* status_value) {
     if (ret_value != 0) {
         return ret_value;
     }
+
+    *status_value = (*status_value & 1) ^ 1;
 
     return 0;
 }

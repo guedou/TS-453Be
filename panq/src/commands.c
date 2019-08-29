@@ -3,6 +3,7 @@
 // panq - commands implementations
 
 
+#include <dlfcn.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -49,10 +50,10 @@ void command_fan(u_int32_t *speed) {
             exit(EXIT_FAILURE);
         }
 
-	float percent = (float) speed_value / (max_fan_speed-15) * 100;
-	if (percent > 100.0) {
-	   percent = 100;
-	}
+     float percent = (float) speed_value / (max_fan_speed-15) * 100;
+     if (percent > 100.0) {
+        percent = 100;
+     }
         printf("%d RPM (~%.2f%%)\n", speed_value, percent);
     }
     else {
@@ -134,14 +135,102 @@ void command_led(char *mode) {
         exit(EXIT_FAILURE);
     }
 
-    for(int fan_id=0; fan_id < 5; fan_id++) {
-	u_int8_t ret_value, fan_status = 0;
-       	u_int32_t fan_speed = 0;
-	ret_value = it8528_get_fan_status(fan_id, &fan_status);
-	ret_value = it8528_get_fan_speed(fan_id, &fan_speed);
-	printf("fan_id=%d ret_value=%d fan_status=%d fan_speed=%d\n", fan_id, ret_value, fan_status, fan_speed);
+}
 
+
+void command_test(char* libuLinux_hal_path) {
+    // Test the functions with the native ones from libuLinux_hal.so
+
+    if (!ensure_it8528()) {
+        exit(EXIT_FAILURE);
     }
+
+    void *handle;
+    char *error;
+
+    handle = dlopen(libuLinux_hal_path, RTLD_LAZY);
+    if (!handle) {
+        fprintf(stderr, "%s\n", dlerror());
+        exit(EXIT_FAILURE);
+    }
+
+    // it8528_get_fan_status
+    u_int8_t (*ec_sys_get_fan_status)(u_int8_t, u_int8_t*) = dlsym(handle, "ec_sys_get_fan_status");
+    error = dlerror();
+    if (error != NULL) {
+        fprintf(stderr, "%s\n", error);
+        exit(EXIT_FAILURE);
+    }
+
+    u_int8_t ret_status_ec, ret_status_it, value_status_ec, value_status_it = 0;
+    ret_status_ec = ec_sys_get_fan_status(0, &value_status_ec);
+    ret_status_it = it8528_get_fan_status(0, &value_status_it);
+    if (ret_status_ec != ret_status_it || value_status_ec != value_status_it) {
+        fprintf(stderr, "it8528_get_fan_status() test failed!\n");
+        fprintf(stderr, "ret   %d != %d\n", ret_status_ec, ret_status_it);
+        fprintf(stderr, "value %d != %d\n", value_status_ec, value_status_it);
+        exit(EXIT_FAILURE);
+    }
+
+    // it8528_get_fan_pwm
+    u_int8_t (*ec_sys_get_fan_pwm)(u_int8_t, u_int8_t*) = dlsym(handle, "ec_sys_get_fan_pwm");
+    error = dlerror();
+    if (error != NULL) {
+        fprintf(stderr, "%s\n", error);
+        exit(EXIT_FAILURE);
+    }
+
+    u_int8_t ret_pwm_ec, ret_pwm_it, value_pwm_ec, value_pwm_it = 0;
+    ret_pwm_ec = ec_sys_get_fan_pwm(0, &value_pwm_ec);
+    ret_pwm_it = it8528_get_fan_pwm(0, &value_pwm_it);
+    if (ret_pwm_ec != ret_pwm_it || value_pwm_ec != value_pwm_it) {
+        fprintf(stderr, "it8528_get_fan_pwm() test failed!\n");
+        fprintf(stderr, "ret   %d != %d\n", ret_pwm_ec, ret_pwm_it);
+        fprintf(stderr, "value %d != %d\n", value_pwm_ec, value_pwm_it);
+        exit(EXIT_FAILURE);
+    }
+
+    // it8528_get_fan_speed
+    u_int8_t (*ec_sys_get_fan_speed)(u_int8_t, u_int32_t*) = dlsym(handle, "ec_sys_get_fan_speed");
+    error = dlerror();
+    if (error != NULL) {
+        fprintf(stderr, "%s\n", error);
+        exit(EXIT_FAILURE);
+    }
+
+    u_int8_t ret_speed_ec, ret_speed_it = 0;
+    u_int32_t value_speed_ec, value_speed_it = 0;
+    ret_speed_ec = ec_sys_get_fan_speed(0, &value_speed_ec);
+    ret_speed_it = it8528_get_fan_speed(0, &value_speed_it);
+    if (ret_speed_ec != ret_speed_it || value_speed_ec != value_speed_it) {
+        fprintf(stderr, "it8528_get_fan_speed() test failed!\n");
+        fprintf(stderr, "ret   %d != %d\n", ret_speed_ec, ret_speed_it);
+        fprintf(stderr, "value %d != %d\n", value_speed_ec, value_speed_it);
+        exit(EXIT_FAILURE);
+    }
+
+    // it8528_get_temperature
+    u_int8_t (*ec_sys_get_temperature)(u_int8_t, double*) = dlsym(handle, "ec_sys_get_temperature");
+    error = dlerror();
+    if (error != NULL) {
+        fprintf(stderr, "%s\n", error);
+        exit(EXIT_FAILURE);
+    }
+
+    u_int8_t ret_temperature_ec, ret_temperature_it = 0;
+    double value_temperature_ec, value_temperature_it = 0;
+    ret_temperature_ec = ec_sys_get_temperature(0, &value_temperature_ec);
+    ret_temperature_it = it8528_get_temperature(0, &value_temperature_it);
+    if (ret_temperature_ec != ret_temperature_it || value_temperature_ec != value_temperature_it) {
+        fprintf(stderr, "it8528_get_temperature() test failed!\n");
+        fprintf(stderr, "ret   %d != %d\n", ret_temperature_ec, ret_temperature_it);
+        fprintf(stderr, "value %f != %f\n", value_temperature_ec, value_temperature_it);
+        exit(EXIT_FAILURE);
+    }
+
+    printf("All tests passed.\n");
+    dlclose(handle);
+    exit(EXIT_SUCCESS);
 }
 
 
