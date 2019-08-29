@@ -66,9 +66,9 @@ int main(int argc, char **argv) {
         if (argv[2]) {
             command_test(argv[2]);
         }
-	else {
+        else {
             command_test("libuLinux_hal.so");
-	}
+        }
     }
     else if (strcmp("temperature", command) == 0) {
         command_temperature();

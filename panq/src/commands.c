@@ -50,26 +50,26 @@ void command_fan(u_int32_t *speed) {
             exit(EXIT_FAILURE);
         }
 
-     float percent = (float) speed_value / (max_fan_speed-15) * 100;
-     if (percent > 100.0) {
-        percent = 100;
-     }
+        float percent = (float) speed_value / (max_fan_speed-15) * 100;
+        if (percent > 100.0) {
+            percent = 100;
+        }
         printf("%d RPM (~%.2f%%)\n", speed_value, percent);
     }
     else {
 
-	if (*speed < 0 || *speed > 100) {
+        if (*speed < 0 || *speed > 100) {
             fprintf(stderr, "Invalid percent!\n");
             exit(EXIT_FAILURE);
-	}
+        }
 
-	// Note: the formula to convert from fan speed to RPM is approximately:
-	//       rpm = 7 * fan_speed - 17
+        // Note: the formula to convert from fan speed to RPM is approximately:
+        //       rpm = 7 * fan_speed - 17
 
-	// Convert from fan speed percentage to fan speed
-	float fan_speed = (max_fan_speed * *speed / 100);
-	fan_speed += 17;
-	fan_speed /= 7;
+        // Convert from fan speed percentage to fan speed
+        float fan_speed = (max_fan_speed * *speed / 100);
+        fan_speed += 17;
+        fan_speed /= 7;
 
         if(it8528_set_fan_speed(0, (u_int8_t) fan_speed) != 0) {
             fprintf(stderr, "Can't set fan speed!\n");
