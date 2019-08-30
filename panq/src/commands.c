@@ -50,7 +50,7 @@ void command_fan(u_int32_t *speed) {
             exit(EXIT_FAILURE);
         }
 
-        float percent = (float) speed_value / (max_fan_speed-15) * 100;
+        float percent = (float) speed_value / (max_fan_speed - 15) * 100;
         if (percent > 100.0) {
             percent = 100;
         }
@@ -109,13 +109,15 @@ void command_log(void) {
 
 
 void command_led(char *mode) {
+    // Implements the led command
+
     ensure_io_capability();
 
     if (!ensure_it8528()) {
         exit(EXIT_FAILURE);
     }
 
-    int led_mode = 0;
+    u_int8_t led_mode = 0;
     if (strcmp("off", mode) == 0) {
         led_mode = 0;
     }
@@ -235,7 +237,7 @@ void command_test(char* libuLinux_hal_path) {
 
 
 void command_temperature(void) {
-    // Implements the temperature command using functions from QNAP
+    // Implements the temperature command
 
     if (!ensure_it8528()) {
         exit(EXIT_FAILURE);

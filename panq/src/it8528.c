@@ -34,6 +34,7 @@ u_int8_t it8528_get_fan_status(u_int8_t fan_id, u_int8_t* status_value) {
 
 
 u_int8_t it8528_get_fan_pwm(u_int8_t fan_id, u_int8_t* pwm_value) {
+
     u_int8_t tmp_pwm_value = 0;
     u_int8_t command = 0;
 
@@ -41,14 +42,14 @@ u_int8_t it8528_get_fan_pwm(u_int8_t fan_id, u_int8_t* pwm_value) {
     ioperm(0x68, 1, 1);
 
     if (fan_id < 0) {
-	fprintf(stderr, "it8528_get_fan_pwm: invalid fan ID!\n");
+        fprintf(stderr, "it8528_get_fan_pwm: invalid fan ID!\n");
         return -1;
     }
     if (fan_id < 5) {
-	command = 0x2e;
+        command = 0x2e;
     }
     else {
-	command = 0x4b;
+        command = 0x4b;
     }
 
     u_int8_t ret_value;
@@ -73,30 +74,30 @@ u_int8_t it8528_get_fan_speed(u_int8_t fan_id, u_int32_t* speed_value) {
     ioperm(0x68, 1, 1);
 
     switch(fan_id) {
-      case 0:
-      case 1:
-      case 2:
-      case 3:
-      case 4:
-	byte0 = (fan_id * 2) + 0x24;
-	byte1 = (fan_id * 2) + 0x25;
-	break;
-      case 6:
-      case 7:
-	byte0 = (fan_id * 2) + 0x14;
-	byte1 = (fan_id * 2) + 0x15;
-	break;
-      case 10:
-	byte1 = 0x5a;
-	byte0 = 0x5b;
-	break;
-      case 11:
-	byte1 = 0x5d;
-	byte0 = 0x5e;
-        break;
-      default:
-	fprintf(stderr, "it8528_get_fan_speed: invalid fan ID!\n");
-        return -1;
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+            byte0 = (fan_id * 2) + 0x24;
+            byte1 = (fan_id * 2) + 0x25;
+            break;
+        case 6:
+        case 7:
+            byte0 = (fan_id * 2) + 0x14;
+            byte1 = (fan_id * 2) + 0x15;
+            break;
+        case 10:
+            byte1 = 0x5a;
+            byte0 = 0x5b;
+            break;
+        case 11:
+            byte1 = 0x5d;
+            byte0 = 0x5e;
+            break;
+        default:
+            fprintf(stderr, "it8528_get_fan_speed: invalid fan ID!\n");
+            return -1;
     }
 
     u_int8_t ret_value, tmp_value = 0;
@@ -126,49 +127,49 @@ u_int8_t it8528_get_temperature(u_int8_t sensor_id, double* temperature_value) {
     command = sensor_id;
  
     switch(sensor_id) {
-      case 0:
-      case 1:
-          break;
-      case 5:
-      case 6:
-      case 7:
-	command -= 3;
-	break;
-      case 10:
-	command = 0x59;
-	break;
-      case 11:
-	command = 0x5C;
-	break;
-      case 0x0F:
-      case 0x10:
-      case 0x11:
-      case 0x12:
-      case 0x13:
-      case 0x14:
-      case 0x15:
-      case 0x16:
-      case 0x17:
-      case 0x18:
-      case 0x19:
-      case 0x1A:
-      case 0x1B:
-      case 0x1C:
-      case 0x1D:
-      case 0x1E:
-      case 0x1F:
-      case 0x20:
-      case 0x21:
-      case 0x22:
-      case 0x23:
-      case 0x24:
-      case 0x25:
-      case 0x26:
-	command = command - 9;
-	break;
-      default:
-	command = 0xD6; // 0x4D6 in the original binary
-	break;
+         case 0:
+         case 1:
+             break;
+         case 5:
+         case 6:
+         case 7:
+             command -= 3;
+             break;
+         case 10:
+             command = 0x59;
+             break;
+         case 11:
+             command = 0x5C;
+             break;
+         case 0x0F:
+         case 0x10:
+         case 0x11:
+         case 0x12:
+         case 0x13:
+         case 0x14:
+         case 0x15:
+         case 0x16:
+         case 0x17:
+         case 0x18:
+         case 0x19:
+         case 0x1A:
+         case 0x1B:
+         case 0x1C:
+         case 0x1D:
+         case 0x1E:
+         case 0x1F:
+         case 0x20:
+         case 0x21:
+         case 0x22:
+         case 0x23:
+         case 0x24:
+         case 0x25:
+         case 0x26:
+             command = command - 9;
+             break;
+         default:
+             command = 0xD6; // 0x4D6 in the original binary
+             break;
     }
 
     u_int8_t ret_value;
@@ -205,16 +206,16 @@ u_int8_t it8528_set_fan_speed(u_int8_t fan_id, u_int8_t fan_speed) {
     u_int8_t command0, command1;
 
     if (fan_id < 0) {
-	fprintf(stderr, "it8528_set_fan_speed: invalid fan ID!\n");
+        fprintf(stderr, "it8528_set_fan_speed: invalid fan ID!\n");
         return -1;
     }
     if (fan_id < 5) {
-	command0 = 0x20;
-	command1 = 0x2e;
+        command0 = 0x20;
+        command1 = 0x2e;
     }
     else {
-	command0 = 0x23;
-	command1 = 0x4b;
+        command0 = 0x23;
+        command1 = 0x4b;
     }
 
     u_int8_t ret_value;

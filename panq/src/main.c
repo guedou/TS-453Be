@@ -35,6 +35,8 @@ int main(int argc, char **argv) {
         usage();
     }
 
+    // Parse arguments and call sub-commands
+
     char *command = argv[1];
     if (strcmp("help", command) == 0) {
         usage();
