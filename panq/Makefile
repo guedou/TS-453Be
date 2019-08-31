@@ -1,9 +1,19 @@
 # Copyright (C) 2019 Guillaume Valadon <guillaume@valadon.net>
 
-all: panq
-
-CFLAGS=-Iinclude/
+CFLAGS=-Werror -Iinclude/
 LD_FLAGS=-Llib/ -lcap-ng -ldl
 
-panq: src/main.c src/commands.c src/utils.c src/it8528.c src/it8528_utils.c
+# Ignore errors
+.IGNORE: clean
+
+# Project management targets
+all: panq
+
+panq: src/*.c
 	$(CC) -o $@ $^ $(LD_FLAGS) $(CFLAGS)
+
+capability: panq
+	setcap cap_sys_rawio+ep panq
+
+clean:
+	@rm panq
