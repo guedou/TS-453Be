@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
         u_int32_t *speed = NULL;
         if (argv[2]) {
             speed = (u_int32_t*) malloc(sizeof(u_int32_t));
-            *speed = atoi(argv[2]);
+            *speed = (u_int32_t) strtoul(argv[2], NULL, 10);
         }
         command_fan(speed);
     }

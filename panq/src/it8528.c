@@ -8,10 +8,11 @@
 #include <sys/io.h>
 #include <unistd.h>
 
+#include "it8528.h"
 #include "it8528_utils.h"
 
 
-u_int8_t it8528_get_fan_status(u_int8_t fan_id, u_int8_t* status_value) {
+int8_t it8528_get_fan_status(u_int8_t fan_id, u_int8_t* status_value) {
 
     if (fan_id > 5) {
         fprintf(stderr, "it8528_get_fan_status: fan ID too big!\n");
@@ -21,7 +22,7 @@ u_int8_t it8528_get_fan_status(u_int8_t fan_id, u_int8_t* status_value) {
     ioperm(0x6c, 1, 1);
     ioperm(0x68, 1, 1);
 
-    u_int8_t ret_value;
+    int8_t ret_value;
     ret_value = it8528_get_byte(2, 0x42, status_value);
     if (ret_value != 0) {
         return ret_value;
@@ -33,7 +34,7 @@ u_int8_t it8528_get_fan_status(u_int8_t fan_id, u_int8_t* status_value) {
 }
 
 
-u_int8_t it8528_get_fan_pwm(u_int8_t fan_id, u_int8_t* pwm_value) {
+int8_t it8528_get_fan_pwm(u_int8_t fan_id, u_int8_t* pwm_value) {
 
     u_int8_t tmp_pwm_value = 0;
     u_int8_t command = 0;
@@ -52,7 +53,7 @@ u_int8_t it8528_get_fan_pwm(u_int8_t fan_id, u_int8_t* pwm_value) {
         command = 0x4b;
     }
 
-    u_int8_t ret_value;
+    int8_t ret_value;
    
     ret_value = it8528_get_byte(2, command, &tmp_pwm_value);
     if (ret_value != 0) {
@@ -65,7 +66,7 @@ u_int8_t it8528_get_fan_pwm(u_int8_t fan_id, u_int8_t* pwm_value) {
 }
 
 
-u_int8_t it8528_get_fan_speed(u_int8_t fan_id, u_int32_t* speed_value) {
+int8_t it8528_get_fan_speed(u_int8_t fan_id, u_int32_t* speed_value) {
 
     u_int8_t byte0;
     u_int8_t byte1;
@@ -100,13 +101,14 @@ u_int8_t it8528_get_fan_speed(u_int8_t fan_id, u_int32_t* speed_value) {
             return -1;
     }
 
-    u_int8_t ret_value, tmp_value = 0;
+    int8_t ret_value;
+    u_int8_t tmp_value = 0;
 
     ret_value = it8528_get_byte(6, byte0, &tmp_value);
     if (ret_value != 0) {
         return ret_value;
     }
-    *speed_value = tmp_value << 8;
+    *speed_value = ((u_int32_t) tmp_value) << 8;
 
     ret_value = it8528_get_byte(6, byte1, &tmp_value);
     if (ret_value != 0) {
@@ -118,7 +120,7 @@ u_int8_t it8528_get_fan_speed(u_int8_t fan_id, u_int32_t* speed_value) {
 }
 
 
-u_int8_t it8528_get_temperature(u_int8_t sensor_id, double* temperature_value) {
+int8_t it8528_get_temperature(u_int8_t sensor_id, double* temperature_value) {
     u_int8_t command = 0;
 
     ioperm(0x6c, 1, 1);
@@ -172,7 +174,7 @@ u_int8_t it8528_get_temperature(u_int8_t sensor_id, double* temperature_value) {
              break;
     }
 
-    u_int8_t ret_value;
+    int8_t ret_value;
 
     ret_value = it8528_get_double(6, command, temperature_value);
     if (ret_value != 0) {
@@ -183,14 +185,14 @@ u_int8_t it8528_get_temperature(u_int8_t sensor_id, double* temperature_value) {
 }
 
 
-u_int8_t it8528_set_front_usb_led(u_int8_t led_mode) {
+int8_t it8528_set_front_usb_led(u_int8_t led_mode) {
 
     if (led_mode > 3)  {
        fprintf(stderr, "it8528_set_front_usb_led: invalid LED mode!\n");
        return -1;
     }
 
-    u_int8_t ret_value;
+    int8_t ret_value;
 
     ret_value = it8528_set_byte(1, 0x54, led_mode);
     if (ret_value != 0) {
@@ -201,7 +203,7 @@ u_int8_t it8528_set_front_usb_led(u_int8_t led_mode) {
 }
 
 
-u_int8_t it8528_set_fan_speed(u_int8_t fan_id, u_int8_t fan_speed) {
+int8_t it8528_set_fan_speed(u_int8_t fan_id, u_int8_t fan_speed) {
 
     u_int8_t command0, command1;
 
@@ -218,7 +220,7 @@ u_int8_t it8528_set_fan_speed(u_int8_t fan_id, u_int8_t fan_speed) {
         command1 = 0x4b;
     }
 
-    u_int8_t ret_value;
+    int8_t ret_value;
 
     ret_value = it8528_set_byte(2, command0, 0x10);
     if (ret_value != 0) {

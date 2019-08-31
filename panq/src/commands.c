@@ -9,17 +9,18 @@
 #include <string.h>
 #include <time.h>
 
+#include "commands.h"
 #include "it8528.h"
 #include "utils.h"
 
-#include <sys/io.h>
+//#include <sys/io.h>
+
 
 void command_check(void) {
     // Implements the check command
 
     if (ensure_it8528()) {
         printf("IT8528 detected.\n");
-        exit(EXIT_SUCCESS);
     }
     else {
         exit(EXIT_FAILURE);
@@ -37,7 +38,7 @@ void command_fan(u_int32_t *speed) {
     u_int16_t max_fan_speed = 1720;
 
     u_int8_t status_value = 0xFF;
-    u_int8_t status_ret = it8528_get_fan_status(0, &status_value);
+    int8_t status_ret = it8528_get_fan_status(0, &status_value);
     if (status_ret != 0 && status_value != 0) {
         fprintf(stderr, "Incorrect fan status!\n");
         exit(EXIT_FAILURE);
@@ -50,7 +51,7 @@ void command_fan(u_int32_t *speed) {
             exit(EXIT_FAILURE);
         }
 
-        float percent = (float) speed_value / (max_fan_speed - 15) * 100;
+        double percent = speed_value / ((double) max_fan_speed - 15) * 100;
         if (percent > 100.0) {
             percent = 100;
         }
@@ -58,7 +59,7 @@ void command_fan(u_int32_t *speed) {
     }
     else {
 
-        if (*speed < 0 || *speed > 100) {
+        if (*speed > 100) {
             fprintf(stderr, "Invalid percent!\n");
             exit(EXIT_FAILURE);
         }
@@ -87,7 +88,7 @@ void command_log(void) {
     }
 
     u_int8_t status_value = 0xFF;
-    u_int8_t status_ret = it8528_get_fan_status(0, &status_value);
+    int8_t status_ret = it8528_get_fan_status(0, &status_value);
     if (status_ret != 0 && status_value != 0) {
         fprintf(stderr, "Incorrect fan status!\n");
         exit(EXIT_FAILURE);
@@ -105,6 +106,8 @@ void command_log(void) {
         exit(EXIT_FAILURE);
     }
     printf("%ld,%d,%.2f\n", time(NULL), speed_value, temperature_value);
+
+    exit(EXIT_SUCCESS);
 }
 
 
@@ -157,14 +160,16 @@ void command_test(char* libuLinux_hal_path) {
     }
 
     // it8528_get_fan_status
-    u_int8_t (*ec_sys_get_fan_status)(u_int8_t, u_int8_t*) = dlsym(handle, "ec_sys_get_fan_status");
+    typedef int8_t (*ec_sys_get_fan_status_t)(u_int8_t, u_int8_t*);
+    ec_sys_get_fan_status_t ec_sys_get_fan_status = (ec_sys_get_fan_status_t) dlsym(handle, "ec_sys_get_fan_status");
     error = dlerror();
     if (error != NULL) {
         fprintf(stderr, "%s\n", error);
         exit(EXIT_FAILURE);
     }
 
-    u_int8_t ret_status_ec, ret_status_it, value_status_ec, value_status_it = 0;
+    int8_t ret_status_ec, ret_status_it;
+    u_int8_t value_status_ec, value_status_it = 0;
     ret_status_ec = ec_sys_get_fan_status(0, &value_status_ec);
     ret_status_it = it8528_get_fan_status(0, &value_status_it);
     if (ret_status_ec != ret_status_it || value_status_ec != value_status_it) {
@@ -175,14 +180,17 @@ void command_test(char* libuLinux_hal_path) {
     }
 
     // it8528_get_fan_pwm
-    u_int8_t (*ec_sys_get_fan_pwm)(u_int8_t, u_int8_t*) = dlsym(handle, "ec_sys_get_fan_pwm");
+    typedef int8_t (*ec_sys_get_fan_pwm_t)(u_int8_t, u_int8_t*);
+    ec_sys_get_fan_pwm_t ec_sys_get_fan_pwm  = (ec_sys_get_fan_pwm_t) dlsym(handle, "ec_sys_get_fan_pwm");
+
     error = dlerror();
     if (error != NULL) {
         fprintf(stderr, "%s\n", error);
         exit(EXIT_FAILURE);
     }
 
-    u_int8_t ret_pwm_ec, ret_pwm_it, value_pwm_ec, value_pwm_it = 0;
+    int8_t ret_pwm_ec, ret_pwm_it;
+    u_int8_t value_pwm_ec, value_pwm_it = 0;
     ret_pwm_ec = ec_sys_get_fan_pwm(0, &value_pwm_ec);
     ret_pwm_it = it8528_get_fan_pwm(0, &value_pwm_it);
     if (ret_pwm_ec != ret_pwm_it || value_pwm_ec != value_pwm_it) {
@@ -193,14 +201,15 @@ void command_test(char* libuLinux_hal_path) {
     }
 
     // it8528_get_fan_speed
-    u_int8_t (*ec_sys_get_fan_speed)(u_int8_t, u_int32_t*) = dlsym(handle, "ec_sys_get_fan_speed");
+    typedef int8_t (*ec_sys_get_fan_speed_t)(u_int8_t, u_int32_t*);
+    ec_sys_get_fan_speed_t ec_sys_get_fan_speed = (ec_sys_get_fan_speed_t) dlsym(handle, "ec_sys_get_fan_speed");
     error = dlerror();
     if (error != NULL) {
         fprintf(stderr, "%s\n", error);
         exit(EXIT_FAILURE);
     }
 
-    u_int8_t ret_speed_ec, ret_speed_it = 0;
+    int8_t ret_speed_ec, ret_speed_it = 0;
     u_int32_t value_speed_ec, value_speed_it = 0;
     ret_speed_ec = ec_sys_get_fan_speed(0, &value_speed_ec);
     ret_speed_it = it8528_get_fan_speed(0, &value_speed_it);
@@ -212,18 +221,19 @@ void command_test(char* libuLinux_hal_path) {
     }
 
     // it8528_get_temperature
-    u_int8_t (*ec_sys_get_temperature)(u_int8_t, double*) = dlsym(handle, "ec_sys_get_temperature");
+    typedef int8_t (*ec_sys_get_temperature_t)(u_int8_t, double*);
+    ec_sys_get_temperature_t ec_sys_get_temperature = (ec_sys_get_temperature_t) dlsym(handle, "ec_sys_get_temperature");
     error = dlerror();
     if (error != NULL) {
         fprintf(stderr, "%s\n", error);
         exit(EXIT_FAILURE);
     }
 
-    u_int8_t ret_temperature_ec, ret_temperature_it = 0;
+    int8_t ret_temperature_ec, ret_temperature_it = 0;
     double value_temperature_ec, value_temperature_it = 0;
     ret_temperature_ec = ec_sys_get_temperature(0, &value_temperature_ec);
     ret_temperature_it = it8528_get_temperature(0, &value_temperature_it);
-    if (ret_temperature_ec != ret_temperature_it || value_temperature_ec != value_temperature_it) {
+    if (ret_temperature_ec != ret_temperature_it || value_temperature_ec < value_temperature_it) {
         fprintf(stderr, "it8528_get_temperature() test failed!\n");
         fprintf(stderr, "ret   %d != %d\n", ret_temperature_ec, ret_temperature_it);
         fprintf(stderr, "value %f != %f\n", value_temperature_ec, value_temperature_it);
@@ -232,7 +242,6 @@ void command_test(char* libuLinux_hal_path) {
 
     printf("All tests passed.\n");
     dlclose(handle);
-    exit(EXIT_SUCCESS);
 }
 
 

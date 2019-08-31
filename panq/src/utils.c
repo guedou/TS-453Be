@@ -12,6 +12,8 @@
 
 #include <cap-ng.h>
 
+#include "utils.h"
+
 
 void ensure_io_capability(void) {
     // Exits panq if privileged I/O port operations are not permitted
