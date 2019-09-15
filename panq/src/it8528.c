@@ -19,12 +19,20 @@ int8_t it8528_get_fan_status(u_int8_t fan_id, u_int8_t* status_value) {
         return -1;
     }
 
-    ioperm(0x6c, 1, 1);
-    ioperm(0x68, 1, 1);
+    if(ioperm(0x6c, 1, 1) != 0) {
+        fprintf(stderr, "it8528_get_fan_status: ioperm(0x6c) failed!\n");
+        return -1;
+    }
+
+    if(ioperm(0x68, 1, 1) != 0) {
+        fprintf(stderr, "it8528_get_fan_status: ioperm(0x68) failed!\n");
+        return -1;
+    }
 
     int8_t ret_value;
     ret_value = it8528_get_byte(2, 0x42, status_value);
     if (ret_value != 0) {
+        fprintf(stderr, "it8528_get_fan_status: it8528_get_byte() failed!\n");
         return ret_value;
     }
 
@@ -39,8 +47,15 @@ int8_t it8528_get_fan_pwm(u_int8_t fan_id, u_int8_t* pwm_value) {
     u_int8_t tmp_pwm_value = 0;
     u_int8_t command = 0;
 
-    ioperm(0x6c, 1, 1);
-    ioperm(0x68, 1, 1);
+    if(ioperm(0x6c, 1, 1) != 0) {
+        fprintf(stderr, "it8528_get_fan_pwm: ioperm(0x6c) failed!\n");
+        return -1;
+    }
+
+    if(ioperm(0x68, 1, 1) != 0) {
+        fprintf(stderr, "it8528_get_fan_pwm: ioperm(0x68) failed!\n");
+        return -1;
+    }
 
     if (fan_id < 0) {
         fprintf(stderr, "it8528_get_fan_pwm: invalid fan ID!\n");
@@ -57,6 +72,7 @@ int8_t it8528_get_fan_pwm(u_int8_t fan_id, u_int8_t* pwm_value) {
    
     ret_value = it8528_get_byte(2, command, &tmp_pwm_value);
     if (ret_value != 0) {
+        fprintf(stderr, "it8528_get_fan_pwm: it8528_get_byte() failed!\n");
         return ret_value;
     }
 
@@ -71,8 +87,15 @@ int8_t it8528_get_fan_speed(u_int8_t fan_id, u_int32_t* speed_value) {
     u_int8_t byte0;
     u_int8_t byte1;
 
-    ioperm(0x6c, 1, 1);
-    ioperm(0x68, 1, 1);
+    if(ioperm(0x6c, 1, 1) != 0) {
+        fprintf(stderr, "it8528_get_fan_speed: ioperm(0x6c) failed!\n");
+        return -1;
+    }
+
+    if(ioperm(0x68, 1, 1) != 0) {
+        fprintf(stderr, "it8528_get_fan_speed: ioperm(0x68) failed!\n");
+        return -1;
+    }
 
     switch(fan_id) {
         case 0:
@@ -106,12 +129,14 @@ int8_t it8528_get_fan_speed(u_int8_t fan_id, u_int32_t* speed_value) {
 
     ret_value = it8528_get_byte(6, byte0, &tmp_value);
     if (ret_value != 0) {
+        fprintf(stderr, "it8528_get_fan_speed: it8528_get_byte() #1 failed!\n");
         return ret_value;
     }
     *speed_value = ((u_int32_t) tmp_value) << 8;
 
     ret_value = it8528_get_byte(6, byte1, &tmp_value);
     if (ret_value != 0) {
+        fprintf(stderr, "it8528_get_fan_speed: it8528_get_byte() #2 failed!\n");
         return ret_value;
     }
     *speed_value += tmp_value;
@@ -121,10 +146,19 @@ int8_t it8528_get_fan_speed(u_int8_t fan_id, u_int32_t* speed_value) {
 
 
 int8_t it8528_get_temperature(u_int8_t sensor_id, double* temperature_value) {
+
     u_int8_t command = 0;
 
-    ioperm(0x6c, 1, 1);
-    ioperm(0x68, 1, 1);
+
+    if(ioperm(0x6c, 1, 1) != 0) {
+        fprintf(stderr, "it8528_get_temperature: ioperm(0x6c) failed!\n");
+        return -1;
+    }
+
+    if(ioperm(0x68, 1, 1) != 0) {
+        fprintf(stderr, "it8528_get_temperature: ioperm(0x68) failed!\n");
+        return -1;
+    }
 
     command = sensor_id;
  
@@ -178,6 +212,7 @@ int8_t it8528_get_temperature(u_int8_t sensor_id, double* temperature_value) {
 
     ret_value = it8528_get_double(6, command, temperature_value);
     if (ret_value != 0) {
+        fprintf(stderr, "it8528_get_temperature: it8528_get_double() failed!\n");
         return ret_value;
     }
 
@@ -187,15 +222,26 @@ int8_t it8528_get_temperature(u_int8_t sensor_id, double* temperature_value) {
 
 int8_t it8528_set_front_usb_led(u_int8_t led_mode) {
 
+    int8_t ret_value;
+
     if (led_mode > 3)  {
        fprintf(stderr, "it8528_set_front_usb_led: invalid LED mode!\n");
        return -1;
     }
 
-    int8_t ret_value;
+    if(ioperm(0x6c, 1, 1) != 0) {
+        fprintf(stderr, "it8528_set_front_usb_led: ioperm(0x6c) failed!\n");
+        return -1;
+    }
+
+    if(ioperm(0x68, 1, 1) != 0) {
+        fprintf(stderr, "it8528_set_front_usb_led: ioperm(0x68) failed!\n");
+        return -1;
+    }
 
     ret_value = it8528_set_byte(1, 0x54, led_mode);
     if (ret_value != 0) {
+        fprintf(stderr, "it8528_set_front_usb_led: it8528_set_byte() failed!\n");
         return ret_value;
     }
 
@@ -211,6 +257,17 @@ int8_t it8528_set_fan_speed(u_int8_t fan_id, u_int8_t fan_speed) {
         fprintf(stderr, "it8528_set_fan_speed: invalid fan ID!\n");
         return -1;
     }
+
+    if(ioperm(0x6c, 1, 1) != 0) {
+        fprintf(stderr, "it8528_set_fan_speed: ioperm(0x6c) failed!\n");
+        return -1;
+    }
+
+    if(ioperm(0x68, 1, 1) != 0) {
+        fprintf(stderr, "it8528_set_fan_speed: ioperm(0x68) failed!\n");
+        return -1;
+    }
+
     if (fan_id < 5) {
         command0 = 0x20;
         command1 = 0x2e;
@@ -230,6 +287,7 @@ int8_t it8528_set_fan_speed(u_int8_t fan_id, u_int8_t fan_speed) {
     u_int8_t fan_speed_normalized = (fan_speed * 100) / 0xFF;
     ret_value = it8528_set_byte(2, command1, fan_speed_normalized);
     if (ret_value != 0) {
+        fprintf(stderr, "it8528_set_fan_speed: it8528_set_byte() failed!\n");
         return ret_value;
     }
 
