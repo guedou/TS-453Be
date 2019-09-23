@@ -1,14 +1,32 @@
-# QNAP - change OS
+# Installing Ubuntu
 
-## Alternatives solutions
+The TS-453Be NAS boots from a [4GB eMMC](https://www.techpowerup.com/review/qnap-ts453b/4.html) soldered to the main board. Different methods can be used to install Ubuntu on the NAS:
+- on the DOM, like done on the [TS-459 Pro](https://jorgbosman.nl/QNAP_TS-459_Pro_with_Ubuntu)
+- on the disks, and chainload Ubuntu grub from the DOM grub
+- on the disks, modify the DOM `grub.cfg` and copy the Ubuntu kernel and initrd to QNAP partitions
 
-- install Ubunu on the DOM
-- grub chainloading
-- copy kernel & initrd
+Unfortunately, it is not possible to permanently boot the NAS from an USB drive.
+
+![QNAP DOM](doc/images/in_thgbmdg5_ve4543.jpg)
+
+Note: if the installation goes wrong the DOM can be easily reflashed using the following instructions https://wiki.qnap.com/wiki/Firmware_Recovery
+
+This tutorial uses the third method to keep DOM modifications as small as possible. In a nutshell, it consists in:
+- a regular Ubuntu installation on SATA disks
+- copying kernel & initrd file sto the DOM (after removing the original QTS ones)
+- editing `grub.cfg` on the DOM & reboot
+
+## Steps
+
+- create a bootable Ubuntu USB drive
+- boot with Ubuntu on the USB front port
+- press F7 to select the USB drive
+- install Ubuntu server on the SATA disks
+- copy the kernel
+
 
 ### BELOW IS TO CHECK ###
 
-- boot with Ubuntu on USB; front port; press F7 to select the USB key
 - edit grub.cfg
   - boot on couette HD: fail
   - Ubuntu installed on sda: fail
@@ -31,14 +49,9 @@
 
 ### STEPS BELOW
 
-## grub
-
-- modify QNAP grub.cfg and copy kernel and initrd to QNAP partitions
-- chainloading
-- load another grub.cfg
-
 
 ## install UEFI on the Ubuntu disk
+
 ```
 (parted) toggle 1 esp
 (parted) p                                                                
@@ -80,8 +93,11 @@ Notes:
   - /dev/sdc & /sdd are used for / & /home
   - remove old md device with `mdadm --manage --stop /dev/md127`
 
-## Installation
+## FIND A TITLE
 
-- regular Ubuntu installation on the disk/disks
-- copy kernel & initrd to the DOM (after removing files)
-- edit grub.cfg on the DOM & reboot
+MAYBE needed:
+```
+root@kotatsu:/media# grub-editenv ./grubenv list
+saved_entry=0
+prev_saved_entry=0
+```
