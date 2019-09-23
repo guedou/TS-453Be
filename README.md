@@ -1,7 +1,9 @@
 # Linux on QNAP TS-453Be
 [![Twitter Follow](https://img.shields.io/twitter/follow/guedou.svg?style=social)](https://twitter.com/intent/follow?screen_name=guedou)
 
-This repository provides notes to install Ubuntu on a [QNAP TS-453Be NAS](https://www.qnap.com/en/product/ts-453be), and to understand how some [QNAP QTS](https://www.qnap.com/qts/) features work. The [panq](https://github.com/guedou/TS-453Be/blob/master/panq/) binary allows to interact with the ITE IT8528 Super I/O controller in order to control the fan speed, the front LED and read the chassis temperature. 
+This repository provides notes to install Ubuntu on a [QNAP TS-453Be NAS](https://www.qnap.com/en/product/ts-453be), and to understand how some [QNAP QTS](https://www.qnap.com/qts/) features work. The [panq](https://github.com/guedou/TS-453Be/blob/master/panq/) binary allows to interact with the ITE IT8528 Super I/O controller in order to control the fan speed, the front LED and read the chassis temperature. This EC is not supported by regular Linux power management tools.
+
+![TS-453Be](doc/images/313_1516332261_TS-453Be_Left-angle-of-elevation.png)
 
 ## Why?
 
@@ -23,6 +25,7 @@ From the top of my idea, I did this project to:
 ## Similar Attempts
 
 To my knowledge, others have succeeded in replacing QTS with another Linux distribution:
+- https://jorgbosman.nl/QNAP_TS-459_Pro_with_Ubuntu
 - http://www.cyrius.com/debian/orion/qnap/
 - https://github.com/vanschelven/qnap-x53
 - https://wiki.qnap.com/wiki/Debian_Installation_On_QNAP
