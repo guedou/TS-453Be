@@ -100,3 +100,12 @@ See https://wiki.debian.org/GrubEFIReinstall
 apt-get install --reinstall grub-efi
 grub-install /dev/sda
 ```
+
+### Edit an initrd File
+
+```
+xz -dc < ../initrd.boot | cpio --quiet -i --make-directories
+# do some changes
+find . 2> /dev/null | cpio --quiet -c -o | xz -9 --format=lzma > ../initrd_new.boot
+cksum ../initrd_new.boot > ../initrd_new.boot.cksum
+```
