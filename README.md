@@ -18,6 +18,7 @@ From memory, I did this project to:
 ## Documentation
 
 - [installing Ubuntu](https://github.com/guedou/TS-453Be/blob/master/doc/installation.md)
+- [investigating QTS firmware recovery](https://github.com/guedou/TS-453Be/blob/master/doc/qts_firmware_recovery.md)
 - [identifying fan controls](https://github.com/guedou/TS-453Be/blob/master/doc/fan_control.md)
 - [reversing QNAP binaries](https://github.com/guedou/TS-453Be/blob/master/doc/reversing.md)
 
