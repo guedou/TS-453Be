@@ -23,10 +23,12 @@ Available commands:
   temperature                - retrieve the temperature
 ```
 
+
 ## Notes
 
 - the binary needs `libcap-ng` to be built.
 - to run `panq` as as regular user, use `make capability` 
+- according to noise analysis from [techpowerup](https://www.techpowerup.com/review/qnap-ts453b/20.html), the fan will output 22 dBA at 10% speed, 34 dBA at 50% and 44 dBA at 100%
 
 
 # More Functionalities
@@ -35,4 +37,4 @@ The original `libuLinux_hal.so` library contains interesting `ec_sys_*` function
 - control more LEDs
 - enclosure opening detection
 - read more temperature sensors
-- automatic fan speed (qfan, tfan...)
+- automatic fan speed (`ec_sys_set_tfan_auto()`, `ec_sys_set_qfan_auto()`...)

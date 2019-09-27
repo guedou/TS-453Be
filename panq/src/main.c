@@ -1,6 +1,6 @@
 // Copyright (C) 2019 Guillaume Valadon <guillaume@valadon.net>
 
-// panq - Interact with the IT8528 Embedded Controler
+// panq - Interact with the IT8528 Embedded Controller
 
 
 #include <stdlib.h>
