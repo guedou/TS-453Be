@@ -34,7 +34,7 @@ mount -o loop,offset=17825792 F_TS-X53B_20161212-1.3.0_EFI.img ./fw_recovery/par
 
 Here are the content of the partitions:
 1. grub.cfg (the one that is edited during the Ubuntu installation) and GRUB modules
-2. Linux kernel images, initrd & QNAP softwares (qpkg.tar, rootfs2.bz, rootfs_ext.tgz)
+2. Linux kernel images, initrd & QNAP software (qpkg.tar, rootfs2.bz, rootfs_ext.tgz)
 3. same as #2 but for rescue
 5. empty
 6. empty
