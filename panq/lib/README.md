@@ -1,1 +1,1 @@
-This is the original `libuLinux_hal.so` library extracted from QNAP QTS. Newer versions can be retrieved from the [latest QTS versions](https:://www.qnap.com/en/download).
+This is the original `libuLinux_hal.so` library extracted from QNAP QTS. Newer versions can be downloaded from the [latest QTS versions](https:://www.qnap.com/en/download). This file can also be extracted from the [System Full Image](https://github.com/guedou/TS-453Be/blob/master/doc/qts_firmware_recovery.md).
