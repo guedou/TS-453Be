@@ -1,4 +1,4 @@
-# Linux on QNAP TS-453Be
+# Ubuntu on QNAP TS-453Be
 [![Twitter Follow](https://img.shields.io/twitter/follow/guedou.svg?style=social)](https://twitter.com/intent/follow?screen_name=guedou)
 
 This repository provides notes to install Ubuntu on a [QNAP TS-453Be NAS](https://www.qnap.com/en/product/ts-453be), and to understand how some [QNAP QTS](https://www.qnap.com/qts/) features work. The [panq](https://github.com/guedou/TS-453Be/blob/master/panq/) binary allows to interact with the ITE IT8528 Super I/O controller in order to control the fan speed, the front LED and read the chassis temperature. This EC is not supported by regular Linux power management tools.
