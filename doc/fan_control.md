@@ -6,13 +6,13 @@ The QTS web interface allows to control the fan speed either automatically or ma
 ## Exploring the Web Interface
 
 The first steps consists in setting the fan rotation speed manually from the QTS control panel:
-![](doc/images/set_speed_manually.png)
+![](https://github.com/guedou/TS-453Be/blob/master/doc/images/set_speed_manually.png)
 
 Then, using a web browser developer console, it is possible to identify the URL controlling the fan speed. With Google Chrome, go to developer tools, in the network section, click "clear", then "record network log", click "apply" in the QNAP control panel. Look for new names, then click "stop" (aka the "record" button). Click "preview" and investigate data sent to the server. Here, `sysRequest.cgi` adjusts the fan speed:
-![](doc/images/sysRequest.cgi_xml.png)
+![](https://github.com/guedou/TS-453Be/blob/master/doc/images/sysRequest.cgi_xml.png)
 
 More investigations can be performed by click on the XML document and look for fan related data. The `Fan_Speed` tag contains the fan speed value selected on the scrollbar:
-![](doc/images/sysRequest.cgi_xml_values.png)
+![](https://github.com/guedou/TS-453Be/blob/master/doc/images/sysRequest.cgi_xml_values.png)
 
 
 ## Reversing sysRequest.cgi

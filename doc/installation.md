@@ -65,7 +65,7 @@ saved_entry=0
 prev_saved_entry=0
 ```
 
-## Encrypted RAID1
+### Encrypted RAID1
 
 Short notes to configure and encrypt a RAID1 volume:
 - create a partition with type 0xFD
