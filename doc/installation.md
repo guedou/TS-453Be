@@ -7,7 +7,7 @@ The TS-453Be NAS boots from a [4GB eMMC](https://www.techpowerup.com/review/qnap
 
 Unfortunately, it is not possible to permanently boot the NAS from an USB drive to change nothing.
 
-![QNAP DOM](doc/images/in_thgbmdg5_ve4543.jpg)
+![QNAP DOM](images/in_thgbmdg5_ve4543.jpg)
 
 Note: if the installation goes wrong the DOM can be easily restored using the following instructions https://wiki.qnap.com/wiki/Firmware_Recovery
 
