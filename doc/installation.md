@@ -71,7 +71,7 @@ Short notes to configure and encrypt a RAID1 volume:
 - create a partition with type 0xFD
 - `mdadm --create --verbose --level=mirror /dev/md1 --raid-devices=2 --force /dev/sda4 /dev/sdb4`
 - `cryptsetup luksFormat /dev/md1`
-- `cryptsetup luksOpen /dev/md1 data1 
+- `cryptsetup luksOpen /dev/md1 data1`
 - `mkfs.ext4 /dev/mapper/data1` 
 - edit `/etc/crypttab` and the device and the key to use
 - edit `/etc/fstab`
