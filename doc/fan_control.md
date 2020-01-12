@@ -5,13 +5,13 @@ The QTS web interface allows to control the fan speed either automatically or ma
 
 ## Exploring the Web Interface
 
-The first steps consists in setting the fan rotation speed manually from the QTS control panel:
+The first step consists in setting the fan rotation speed manually from the QTS control panel:
 ![](https://github.com/guedou/TS-453Be/blob/master/doc/images/set_speed_manually.png)
 
 Then, using a web browser developer console, it is possible to identify the URL controlling the fan speed. With Google Chrome, go to developer tools, in the network section, click "clear", then "record network log", click "apply" in the QNAP control panel. Look for new names, then click "stop" (aka the "record" button). Click "preview" and investigate data sent to the server. Here, `sysRequest.cgi` adjusts the fan speed:
 ![](https://github.com/guedou/TS-453Be/blob/master/doc/images/sysRequest.cgi_xml.png)
 
-More investigations can be performed by click on the XML document and look for fan related data. The `Fan_Speed` tag contains the fan speed value selected on the scrollbar:
+More investigations can be performed by clicking on the XML document and look for fan related data. The `Fan_Speed` tag contains the fan speed value selected on the scrollbar:
 ![](https://github.com/guedou/TS-453Be/blob/master/doc/images/sysRequest.cgi_xml_values.png)
 
 
@@ -19,7 +19,7 @@ More investigations can be performed by click on the XML document and look for f
 
 The `sysRequest.cgi` is a regular ELF binary than can either be retrieved from a QTS installation, or extracted from [rootfs2.bz](https://github.com/guedou/TS-453Be/blob/master/doc/qts_firmware_recovery.md).
 
-Using [radare2](https://github.com/radareorg/radare2), let's have a look at string that contains the `fan_` keyword:
+Using [radare2](https://github.com/radareorg/radare2), let's have a look at strings that contains the `fan_` keyword:
 ```
 r2 bin/sysRequest.cgi
 [0x0040d450]> izz~+fan_ # insensitive case search (~+) in strings
@@ -50,7 +50,7 @@ The strings that contains `/sbin/hal_event` are promising. Indeed, on QTS, the f
 
 ## Running QNAP in a chroot
 
-The `hal_event` can be run on a regular Ubuntu installation. It is a really good news that indicates that no kernel modules is required to interact with fan controls. From a QTS installation, you need to retrieve `hal_event`, `hal_daemon`, `hal_tool`, their corresponding shared libraries as well as configuration information with `hal_tool dump`.
+The `hal_event` can be run on a regular Ubuntu installation. It is really good news that indicates that no kernel modules is required to interact with fan controls. From a QTS installation, you need to retrieve `hal_event`, `hal_daemon`, `hal_tool`, their corresponding shared libraries as well as configuration information with `hal_tool dump`.
 
 Then, you need to create the chroot using the following commands:
 ```
