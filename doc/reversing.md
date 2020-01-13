@@ -27,7 +27,7 @@ r2 -A hal_util
 0x004092d0    1 6            sym.imp.HM_Set_Fan_Speed_By_PWM
 ```
 
-The `sym.imp.HM_Set_Fan_Speed()` and `sym.imp.HM_Set_Fan_Speed_By_PWM()` looks both interesting, and are imported from on of the 12 external libraries used by `hal_util`, as shown with the following command:
+The `sym.imp.HM_Set_Fan_Speed()` and `sym.imp.HM_Set_Fan_Speed_By_PWM()` looks both interesting, and are imported from one of the 12 external libraries used by `hal_util`, as shown with the following command:
 ```
 [0x0040a270]> 
 il
