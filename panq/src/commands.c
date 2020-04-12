@@ -1,4 +1,4 @@
-// Copyright (C) 2019 Guillaume Valadon <guillaume@valadon.net>
+// Copyright (C) 2020 Guillaume Valadon <guillaume@valadon.net>
 
 // panq - commands implementations
 
@@ -7,13 +7,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/types.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "commands.h"
 #include "it8528.h"
 #include "utils.h"
-
-//#include <sys/io.h>
 
 
 void command_check(void) {
@@ -145,6 +145,13 @@ void command_led(char *mode) {
 
 void command_test(char* libuLinux_hal_path) {
     // Test the functions with the native ones from libuLinux_hal.so
+
+    bool is_root = (getuid() == 0 && geteuid() == 0);
+
+    if (is_root) {
+        fprintf(stderr, "The test command cannot be used as root!\n");
+        exit(EXIT_FAILURE);
+    }
 
     if (!ensure_it8528()) {
         exit(EXIT_FAILURE);

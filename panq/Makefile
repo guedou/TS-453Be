@@ -1,7 +1,7 @@
-# Copyright (C) 2019 Guillaume Valadon <guillaume@valadon.net>
+# Copyright (C) 2020 Guillaume Valadon <guillaume@valadon.net>
 
 CFLAGS=-Werror -Iinclude/
-LD_FLAGS=-Llib/ -lcap-ng -ldl
+LD_FLAGS=-Llib/ -lcap-ng -ldl -lseccomp
 
 # Ignore errors
 .IGNORE: clean

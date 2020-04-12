@@ -26,7 +26,7 @@ Available commands:
 
 ## Notes
 
-- the binary needs `libcap-ng` to be built.
+- the binary needs `libcap-ng` and `libseccomp2` to be built.
 - to run `panq` as as regular user, use `make capability` 
 - according to noise analysis from [techpowerup](https://www.techpowerup.com/review/qnap-ts453b/20.html), the fan will output 22 dBA at 10% speed, 34 dBA at 50% and 44 dBA at 100%
 

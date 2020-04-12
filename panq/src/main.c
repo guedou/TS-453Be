@@ -1,4 +1,4 @@
-// Copyright (C) 2019 Guillaume Valadon <guillaume@valadon.net>
+// Copyright (C) 2020 Guillaume Valadon <guillaume@valadon.net>
 
 // panq - Interact with the IT8528 Embedded Controller
 
@@ -8,6 +8,9 @@
 #include <string.h>
 
 #include "commands.h"
+#include "utils.h"
+
+#include <seccomp.h>
 
 
 void usage(void) {
@@ -35,6 +38,8 @@ int main(int argc, char **argv) {
         usage();
     }
 
+    scmp_filter_ctx scmp_ctx = configure_seccomp();
+
     // Parse arguments and call sub-commands
 
     char *command = argv[1];
@@ -42,9 +47,11 @@ int main(int argc, char **argv) {
         usage();
     }
     else if (strcmp("check", command) == 0) {
+        seccomp_load(scmp_ctx);
         command_check();
     }
     else if (strcmp("fan", command) == 0) {
+        seccomp_load(scmp_ctx);
         u_int32_t *speed = NULL;
         if (argv[2]) {
             speed = (u_int32_t*) malloc(sizeof(u_int32_t));
@@ -53,6 +60,7 @@ int main(int argc, char **argv) {
         command_fan(speed);
     }
     else if (strcmp("led", command) == 0) {
+        seccomp_load(scmp_ctx);
         if (argv[2]) {
             command_led(argv[2]);
         }
@@ -62,9 +70,11 @@ int main(int argc, char **argv) {
         }
     }
     else if (strcmp("log", command) == 0) {
+        seccomp_load(scmp_ctx);
         command_log();
     }
     else if (strcmp("test", command) == 0) {
+        seccomp_load(update_seccomp(scmp_ctx));
         if (argv[2]) {
             command_test(argv[2]);
         }
@@ -73,6 +83,7 @@ int main(int argc, char **argv) {
         }
     }
     else if (strcmp("temperature", command) == 0) {
+        seccomp_load(scmp_ctx);
         command_temperature();
     }
     else {
