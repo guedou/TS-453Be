@@ -1,4 +1,4 @@
-// Copyright (C) 2019 Guillaume Valadon <guillaume@valadon.net>
+// Copyright (C) 2020 Guillaume Valadon <guillaume@valadon.net>
 
 // panq - IT8528 utils
 
@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/io.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "it8528_utils.h"
@@ -26,7 +27,8 @@ int8_t it8528_check_ready(u_int8_t port, u_int8_t bit_value) {
     // Poll the bit value
     do { 
         value = inb(port);
-        usleep(0x32);
+        struct timespec ts = { .tv_sec= 0, .tv_nsec = 0x32 * 1000};
+        nanosleep(&ts, NULL);
 
         if ((value & bit_value) == 0) {
            return 0;
@@ -47,7 +49,8 @@ u_int8_t it8528_clear_buffer(u_int8_t port) {
     // Poll the bit value
     do {
         value = inb(0x6C);
-        usleep(0x32);
+        struct timespec ts = { .tv_sec= 0, .tv_nsec = 0x32 * 1000};
+        nanosleep(&ts, NULL);
 
         if ((value & 1) != 0) {
            return 0;
